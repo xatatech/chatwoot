@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+node_modules
+log
+storage
+tmp
+coverage
+public/vite
+public/packs
+vendor/bundle

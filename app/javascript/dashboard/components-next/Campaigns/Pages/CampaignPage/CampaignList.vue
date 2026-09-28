@@ -32,6 +32,7 @@ const handleAnalytics = campaign => emit('analytics', campaign);
       :message="campaign.message"
       :is-enabled="campaign.enabled"
       :status="campaign.campaign_status"
+      :sms-submission="campaign.sms_submission"
       :sender="campaign.sender"
       :inbox="campaign.inbox"
       :scheduled-at="campaign.scheduled_at"

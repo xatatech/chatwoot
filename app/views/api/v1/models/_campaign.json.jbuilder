@@ -11,6 +11,9 @@ end
 json.message resource.message
 json.template_params resource.template_params
 json.campaign_status resource.campaign_status
+if resource.inbox.channel_type == 'Channel::Sms' && resource.inbox.channel.m360?
+  json.sms_submission resource.trigger_rules['m360_submission']
+end
 json.enabled resource.enabled
 json.campaign_type resource.campaign_type
 if resource.campaign_type == 'one_off'

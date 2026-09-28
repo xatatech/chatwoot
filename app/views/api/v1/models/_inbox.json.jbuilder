@@ -75,7 +75,7 @@ json.line_channel_id resource.channel.try(:line_channel_id) if resource.channel_
 
 ## Twilio Attributes
 json.messaging_service_sid resource.channel.try(:messaging_service_sid)
-json.phone_number resource.channel.try(:phone_number)
+json.phone_number(resource.sms? && resource.channel.m360? ? resource.channel.provider_config['sender_id'] : resource.channel.try(:phone_number))
 json.medium resource.channel.try(:medium) if resource.twilio?
 if resource.twilio?
   json.content_templates resource.channel.try(:content_templates)
@@ -136,6 +136,9 @@ if resource.api?
 end
 
 json.provider resource.channel.try(:provider)
+if resource.sms? && resource.channel.m360? && Current.account_user&.administrator?
+  json.m360_config resource.channel.m360_public_config
+end
 
 ## Telegram Attributes
 json.bot_name resource.channel.try(:bot_name) if resource.telegram?

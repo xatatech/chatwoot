@@ -8,6 +8,7 @@ class Webhooks::SmsEventsJob < ApplicationJob
 
     channel = Channel::Sms.find_by(phone_number: params[:to])
     return unless channel
+    return if channel.m360? # M360 is outbound-only; never process Bandwidth callbacks.
 
     process_event_params(channel, params)
   end

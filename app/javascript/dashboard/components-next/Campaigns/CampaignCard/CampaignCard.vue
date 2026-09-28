@@ -42,6 +42,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  smsSubmission: {
+    type: Object,
+    default: null,
+  },
   showAnalytics: {
     type: Boolean,
     default: false,
@@ -58,7 +62,9 @@ const STATUS_PROCESSING = 'processing';
 const { formatMessage } = useMessageFormatter();
 
 const isActive = computed(() =>
-  props.isLiveChatType ? props.isEnabled : props.status !== STATUS_COMPLETED
+  props.isLiveChatType
+    ? props.isEnabled
+    : !['completed', 'failed'].includes(props.status)
 );
 
 const statusTextColor = computed(() => ({
@@ -72,6 +78,21 @@ const campaignStatus = computed(() => {
       ? t('CAMPAIGN.LIVE_CHAT.CARD.STATUS.ENABLED')
       : t('CAMPAIGN.LIVE_CHAT.CARD.STATUS.DISABLED');
   }
+
+  if (props.smsSubmission) {
+    const { accepted, rejected, unknown } = props.smsSubmission;
+    if (unknown > 0) return t('CAMPAIGN.SMS.M360.UNCERTAIN');
+    if (rejected > 0) {
+      return accepted > 0
+        ? t('CAMPAIGN.SMS.M360.PARTIAL')
+        : t('CAMPAIGN.SMS.M360.FAILED');
+    }
+    return accepted > 0
+      ? t('CAMPAIGN.SMS.M360.SUBMITTED')
+      : t('CAMPAIGN.SMS.M360.NO_RECIPIENTS');
+  }
+
+  if (props.status === 'failed') return t('CAMPAIGN.SMS.M360.FAILED');
 
   if (props.status === STATUS_COMPLETED) {
     return t('CAMPAIGN.SMS.CARD.STATUS.COMPLETED');
@@ -116,6 +137,17 @@ const inboxIcon = computed(() => {
         v-dompurify-html="formatMessage(message, false, false, false)"
         class="text-sm text-n-slate-11 line-clamp-1 [&>p]:mb-0 h-6"
       />
+      <div v-if="smsSubmission" class="text-sm text-n-slate-11">
+        <p>{{ t('CAMPAIGN.SMS.M360.COUNTS', smsSubmission) }}</p>
+        <p>{{ t('CAMPAIGN.SMS.M360.DELIVERY_NOTE') }}</p>
+        <p
+          v-for="error in smsSubmission.errors"
+          :key="error"
+          class="text-n-ruby-11"
+        >
+          {{ error }}
+        </p>
+      </div>
       <div class="flex items-center w-full h-6 gap-2 overflow-hidden">
         <LiveChatCampaignDetails
           v-if="isLiveChatType"
