@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -19,6 +19,18 @@ const form = reactive({
   internationalEnabled:
     props.inbox?.m360_config?.international_enabled || false,
 });
+
+watch(
+  () => props.inbox?.id,
+  () => {
+    form.name = props.inbox?.name || 'M360 SMS';
+    form.senderId = props.inbox?.m360_config?.sender_id || '';
+    form.internationalEnabled =
+      props.inbox?.m360_config?.international_enabled || false;
+    form.appKey = '';
+    form.appSecret = '';
+  }
+);
 
 async function save() {
   saving.value = true;

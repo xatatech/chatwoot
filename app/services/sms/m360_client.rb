@@ -53,7 +53,7 @@ class Sms::M360Client
     number = number.delete_prefix('+')
     number = "63#{number[1..]}" if number.match?(/\A09\d{9}\z/)
     number = "63#{number}" if number.match?(/\A9\d{9}\z/)
-    raise Error, 'Use a valid phone number with its country code' unless number.match?(/\A[1-9]\d{9,12}\z/)
+    raise Error, 'Use a valid phone number with its country code' unless number.match?(/\A[1-9]\d{6,14}\z/)
 
     number
   end

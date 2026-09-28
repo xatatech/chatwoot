@@ -68,6 +68,11 @@ class M360ClientTest < Minitest::Test
     end
   end
 
+  def test_international_e164_length
+    assert_equal '123456789012345', Sms::M360Client.normalize_number('+123456789012345')
+    assert_raises(Sms::M360Client::Error) { Sms::M360Client.normalize_number('+1234567890123456') }
+  end
+
   def test_validation_does_not_contact_provider
     with_transport(response) do |http|
       ['123', '+63 9171234567', '+12077687523'].each do |to|

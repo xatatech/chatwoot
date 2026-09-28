@@ -8,7 +8,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 COPY . .
 RUN pnpm exec prettier --check app/javascript/dashboard/routes/dashboard/settings/inbox/channels/M360Sms.vue
 RUN pnpm exec eslint app/javascript/dashboard/routes/dashboard/settings/inbox/channels/M360Sms.vue
-RUN pnpm exec vitest run app/javascript/dashboard/routes/dashboard/settings/inbox/specs/M360Settings.spec.js app/javascript/dashboard/routes/dashboard/settings/inbox/specs/FinishSetup.spec.js app/javascript/dashboard/routes/dashboard/settings/inbox/settingsPage/specs/ConfigurationPage.spec.js --maxWorkers=2 --minWorkers=1
+RUN pnpm exec vitest run app/javascript/dashboard/routes/dashboard/settings/inbox/channels/specs/M360Sms.spec.js app/javascript/dashboard/routes/dashboard/settings/inbox/specs/M360Settings.spec.js app/javascript/dashboard/routes/dashboard/settings/inbox/specs/FinishSetup.spec.js app/javascript/dashboard/routes/dashboard/settings/inbox/settingsPage/specs/ConfigurationPage.spec.js --maxWorkers=2 --minWorkers=1
 ENV NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192
 RUN pnpm exec vite build --mode production && pnpm run build:sdk
 
