@@ -132,3 +132,10 @@ session.get("/api/v1/accounts/#{account.id}/campaigns", headers: headers, as: :j
 failed_result = session.response.parsed_body.find { |item| item['id'] == failed_campaign.display_id }
 check(failed_result['campaign_status'] == 'failed' && failed_result['sms_submission']['rejected'] == 1, 'campaign API exposes the failed submission summary')
 puts 'M360 campaign failure checks complete'
+
+begin
+  Sms::OneoffSmsCampaignService.new(campaign: campaign).perform
+  raise 'Completed campaign unexpectedly ran again'
+rescue RuntimeError => e
+  check(e.message == 'Completed Campaign', 'existing completed-campaign guard stays compatible')
+end

@@ -3,7 +3,8 @@ class Sms::OneoffSmsCampaignService
 
   def perform
     raise "Invalid campaign #{campaign.id}" if campaign.inbox.inbox_type != 'Sms' || !campaign.one_off?
-    raise 'Finished Campaign' if campaign.completed? || campaign.failed?
+    raise 'Completed Campaign' if campaign.completed?
+    raise 'Failed Campaign' if campaign.failed?
     return Sms::M360CampaignService.new(campaign: campaign).perform if channel.m360?
 
     audience_label_ids = campaign.audience.select { |audience| audience['type'] == 'Label' }.pluck('id')
