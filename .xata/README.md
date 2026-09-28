@@ -35,7 +35,7 @@ Tests use synthetic data in disposable containers on an internal Docker network.
 
 1. Fetch upstream tags and create an upgrade branch from the fork's production branch. Merge the chosen stable release tag. Do not hard-reset the production branch to upstream or use GitHub's discard-changes synchronization.
 2. Resolve conflicts while retaining M360 source files and native integration changes. Update `.xata/upstream.json` to the selected release tag, commit and official image digest. Update the CodeBuild runtime mirror to the same release; otherwise the build fails its Git-SHA check.
-3. Run the tests and CodeBuild against the exact upgrade commit. A failed build never publishes or deploys an image. Review the resulting PR and any upstream migration requirements.
+3. Run the tests and CodeBuild against the exact upgrade commit. Tests must pass before an image is published. Deploy only a build marked SUCCEEDED with a matching release manifest; a later publication/manifest failure can leave an unpromoted image in ECR. Review the resulting PR and any upstream migration requirements.
 4. Promote `release.json`'s image digest through the ops repository to **both** Chatwoot web and worker tasks. Keep the current digest recorded for rollback. Ordinary official-image updates do not contain this extension.
 5. For an upstream version change, back up, stop writers/workers, run the upstream database preparation with the new image, and verify before reopening traffic. Database migrations can make reverting only the image unsafe. Follow the ops maintenance runbook.
 
