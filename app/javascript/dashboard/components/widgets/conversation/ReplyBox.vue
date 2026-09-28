@@ -340,6 +340,9 @@ export default {
       if (this.isAnInstagramChannel) {
         return MESSAGE_MAX_LENGTH.INSTAGRAM;
       }
+      if (this.isAViberChannel) {
+        return MESSAGE_MAX_LENGTH.VIBER;
+      }
       if (this.isATelegramChannel) {
         return MESSAGE_MAX_LENGTH.TELEGRAM;
       }
@@ -378,6 +381,7 @@ export default {
         this.isAPIInbox ||
         this.isAnEmailChannel ||
         this.isASmsInbox ||
+        this.isAViberChannel ||
         this.isATelegramChannel ||
         this.isALineChannel ||
         this.isAnInstagramChannel ||
@@ -432,7 +436,8 @@ export default {
         this.isAWebWidgetInbox ||
         this.isAPIInbox ||
         this.isAWhatsAppChannel ||
-        this.isATelegramChannel
+        this.isATelegramChannel ||
+        this.isAViberChannel
       );
     },
     isSignatureEnabledForInbox() {

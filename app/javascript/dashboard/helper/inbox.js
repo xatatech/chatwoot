@@ -9,6 +9,7 @@ export const INBOX_TYPES = {
   API: 'Channel::Api',
   EMAIL: 'Channel::Email',
   TELEGRAM: 'Channel::Telegram',
+  VIBER: 'Channel::Viber',
   LINE: 'Channel::Line',
   SMS: 'Channel::Sms',
   INSTAGRAM: 'Channel::Instagram',
@@ -24,6 +25,7 @@ export const CHANNEL_TYPES = {
   INSTAGRAM: 'instagram',
   TIKTOK: 'tiktok',
   TELEGRAM: 'telegram',
+  VIBER: 'viber',
   LINE: 'line',
   GMAIL: 'gmail',
   OUTLOOK: 'outlook',
@@ -89,6 +91,7 @@ const INBOX_ICON_MAP_FILL = {
   [INBOX_TYPES.API]: 'i-ri-cloudy-fill',
   [INBOX_TYPES.EMAIL]: 'i-ri-mail-fill',
   [INBOX_TYPES.TELEGRAM]: 'i-ri-telegram-fill',
+  [INBOX_TYPES.VIBER]: 'i-ri-phone-fill',
   [INBOX_TYPES.LINE]: 'i-ri-line-fill',
   [INBOX_TYPES.INSTAGRAM]: 'i-ri-instagram-fill',
   [INBOX_TYPES.TIKTOK]: 'i-ri-tiktok-fill',
@@ -104,6 +107,7 @@ const INBOX_ICON_MAP_LINE = {
   [INBOX_TYPES.API]: 'i-woot-api',
   [INBOX_TYPES.EMAIL]: 'i-woot-mail',
   [INBOX_TYPES.TELEGRAM]: 'i-woot-telegram',
+  [INBOX_TYPES.VIBER]: 'i-ri-phone-line',
   [INBOX_TYPES.LINE]: 'i-woot-line',
   [INBOX_TYPES.INSTAGRAM]: 'i-woot-instagram',
   [INBOX_TYPES.TIKTOK]: 'i-woot-tiktok',
@@ -119,6 +123,7 @@ const INBOX_IDENTIFIER_RESOLVERS = {
   [INBOX_TYPES.WHATSAPP]: inbox => inbox.phone_number,
   [INBOX_TYPES.SMS]: inbox => inbox.phone_number,
   [INBOX_TYPES.LINE]: inbox => inbox.line_channel_id,
+  [INBOX_TYPES.VIBER]: inbox => inbox.bot_name,
   [INBOX_TYPES.API]: inbox => inbox.inbox_identifier,
   [INBOX_TYPES.TWILIO]: inbox =>
     inbox.phone_number?.replace(/^whatsapp:/, '') ||
@@ -171,6 +176,9 @@ export const getReadableInboxByType = (type, phoneNumber) => {
 
     case INBOX_TYPES.TELEGRAM:
       return 'telegram';
+
+    case INBOX_TYPES.VIBER:
+      return 'viber';
 
     case INBOX_TYPES.LINE:
       return 'line';

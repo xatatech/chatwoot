@@ -159,6 +159,10 @@ class Inbox < ApplicationRecord
     channel_type == 'Channel::TwitterProfile'
   end
 
+  def viber?
+    channel_type == 'Channel::Viber'
+  end
+
   def telegram?
     channel_type == 'Channel::Telegram'
   end
@@ -194,6 +198,8 @@ class Inbox < ApplicationRecord
       return nil if channel.m360?
 
       "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/sms/#{channel.phone_number.delete_prefix('+')}"
+    when 'Channel::Viber'
+      channel.webhook_url
     when 'Channel::Line'
       "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/line/#{channel.line_channel_id}"
     when 'Channel::Whatsapp'

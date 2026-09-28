@@ -79,6 +79,10 @@ export const useInbox = (inboxId = null) => {
     return channelType.value === INBOX_TYPES.EMAIL;
   });
 
+  const isAViberChannel = computed(
+    () => channelType.value === INBOX_TYPES.VIBER
+  );
+
   const isATelegramChannel = computed(() => {
     return channelType.value === INBOX_TYPES.TELEGRAM;
   });
@@ -149,6 +153,7 @@ export const useInbox = (inboxId = null) => {
     isAPIInbox,
     isASmsInbox,
     isATelegramChannel,
+    isAViberChannel,
     isATwilioChannel,
     isATwilioSMSChannel,
     isAWebWidgetInbox,

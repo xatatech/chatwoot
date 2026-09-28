@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_28_000000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -713,6 +713,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
     t.datetime "updated_at", null: false
     t.boolean "tweets_enabled", default: true
     t.index ["account_id", "profile_id"], name: "index_channel_twitter_profiles_on_account_id_and_profile_id", unique: true
+  end
+
+  create_table "channel_viber", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "bot_id", null: false
+    t.string "bot_name", null: false
+    t.string "bot_uri"
+    t.text "encrypted_bot_token", null: false
+    t.string "webhook_identifier", null: false
+    t.string "webhook_status", default: "pending", null: false
+    t.string "webhook_error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_channel_viber_on_account_id"
+    t.index ["bot_id"], name: "index_channel_viber_on_bot_id", unique: true
+    t.index ["webhook_identifier"], name: "index_channel_viber_on_webhook_identifier", unique: true
   end
 
   create_table "channel_web_widgets", id: :serial, force: :cascade do |t|

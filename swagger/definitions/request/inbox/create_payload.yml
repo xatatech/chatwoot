@@ -116,6 +116,7 @@ properties:
       - $ref: '#/components/schemas/inbox_create_email_channel_payload'
       - $ref: '#/components/schemas/inbox_create_line_channel_payload'
       - $ref: '#/components/schemas/inbox_create_telegram_channel_payload'
+      - $ref: '#/components/schemas/inbox_create_viber_channel_payload'
       - $ref: '#/components/schemas/inbox_create_whatsapp_channel_payload'
       - $ref: '#/components/schemas/inbox_create_sms_channel_payload'
     discriminator:
@@ -126,5 +127,6 @@ properties:
         email: '#/components/schemas/inbox_create_email_channel_payload'
         line: '#/components/schemas/inbox_create_line_channel_payload'
         telegram: '#/components/schemas/inbox_create_telegram_channel_payload'
+        viber: '#/components/schemas/inbox_create_viber_channel_payload'
         whatsapp: '#/components/schemas/inbox_create_whatsapp_channel_payload'
         sms: '#/components/schemas/inbox_create_sms_channel_payload'

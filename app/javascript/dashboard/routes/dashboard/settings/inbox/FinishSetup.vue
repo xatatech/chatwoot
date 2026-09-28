@@ -7,6 +7,7 @@ import QRCode from 'qrcode';
 import EmptyState from '../../../../components/widgets/EmptyState.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import DuplicateInboxBanner from './channels/instagram/DuplicateInboxBanner.vue';
+import ViberConnection from './channels/ViberConnection.vue';
 import EmailInboxFinish from './channels/emailChannels/EmailInboxFinish.vue';
 import WhatsappChannelAPI from 'dashboard/api/channel/whatsappChannel';
 import { useAlert } from 'dashboard/composables';
@@ -236,6 +237,13 @@ watch(
             "
             @click="retryWhatsAppWebhookSetup"
           />
+        </div>
+        <div
+          v-if="currentInbox.channel_type === INBOX_TYPES.VIBER"
+          class="max-w-xl mx-auto mt-6 text-start"
+        >
+          <p class="mb-4">{{ t('INBOX_MGMT.VIBER.FINISH') }}</p>
+          <ViberConnection :inbox="currentInbox" />
         </div>
         <div class="w-[50%] max-w-[50%] ml-[25%]">
           <woot-code

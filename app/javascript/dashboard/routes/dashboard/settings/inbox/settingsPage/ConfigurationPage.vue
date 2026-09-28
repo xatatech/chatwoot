@@ -16,6 +16,7 @@ import TextArea from 'next/textarea/TextArea.vue';
 import { sanitizeAllowedDomains } from 'dashboard/helper/URLHelper';
 import WhatsappBusinessManagementToken from './WhatsappBusinessManagementToken.vue';
 import HmacSecretKey from './components/HmacSecretKey.vue';
+import Viber from '../channels/Viber.vue';
 import M360Sms from '../channels/M360Sms.vue';
 
 export default {
@@ -30,6 +31,7 @@ export default {
     WhatsappBusinessManagementToken,
     HmacSecretKey,
     M360Sms,
+    Viber,
   },
   mixins: [inboxMixin],
   props: {
@@ -218,6 +220,7 @@ export default {
 
 <template>
   <M360Sms v-if="inbox.provider === 'm360'" :inbox="inbox" />
+  <Viber v-else-if="isAViberChannel" :inbox="inbox" />
   <div v-else-if="isATwilioChannel">
     <SettingsFieldSection
       :label="$t('INBOX_MGMT.ADD.TWILIO.API_CALLBACK.TITLE')"

@@ -126,5 +126,6 @@ properties:
       - $ref: '#/components/schemas/inbox_update_email_channel_payload'
       - $ref: '#/components/schemas/inbox_update_line_channel_payload'
       - $ref: '#/components/schemas/inbox_update_telegram_channel_payload'
+      - $ref: '#/components/schemas/inbox_update_viber_channel_payload'
       - $ref: '#/components/schemas/inbox_update_whatsapp_channel_payload'
       - $ref: '#/components/schemas/inbox_update_sms_channel_payload'

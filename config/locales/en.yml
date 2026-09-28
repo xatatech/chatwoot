@@ -30,6 +30,9 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  viber:
+    unsupported_message: "Viber message (%{type})"
+    attachment_unavailable: "Viber attachment could not be downloaded. Ask the customer to send it again."
   hello: 'Hello world'
   inbox:
     reauthorization:

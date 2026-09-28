@@ -621,6 +621,10 @@
           "VOICE": {
             "TITLE": "Voice",
             "DESCRIPTION": "Integrate with Twilio Voice"
+          },
+          "VIBER": {
+            "TITLE": "Viber",
+            "DESCRIPTION": "Receive and reply to your Viber chatbot conversations."
           }
         }
       },
@@ -1619,7 +1623,8 @@
       "API": "API Channel",
       "INSTAGRAM": "Instagram",
       "TIKTOK": "TikTok",
-      "VOICE": "Voice"
+      "VOICE": "Voice",
+      "VIBER": "Viber"
     },
     "M360": {
       "DESCRIPTION": "Send SMS using your approved M360 sender ID. Create campaigns from Campaigns → One-off using this inbox. Customer replies are not supported.",
@@ -1635,6 +1640,26 @@
       "SAVED": "M360 settings saved",
       "ERROR": "Could not save M360 settings. Check the required fields and try again.",
       "PROVIDER": "M360"
+    },
+    "VIBER": {
+      "TITLE": "Connect your Viber chatbot",
+      "DESCRIPTION": "Connect a Viber chatbot using its bot token. Customers can message your bot and your team can reply here. Chatwoot will replace the bot’s current webhook.",
+      "INBOX_NAME": "Inbox name",
+      "BOT_TOKEN": "Bot token",
+      "KEEP_TOKEN": "Leave the token blank to keep the saved token. Save to reconnect the webhook.",
+      "CREATE": "Create Viber inbox",
+      "SAVE": "Save and reconnect",
+      "SAVED": "Viber webhook setup queued. Refresh the connection status shortly.",
+      "ERROR": "Could not save Viber settings. Check the token and try again.",
+      "STATUS": "Connection status: {status}",
+      "STATUSES": {
+        "pending": "Connecting",
+        "connected": "Connected",
+        "failed": "Connection failed"
+      },
+      "REFRESH": "Refresh status",
+      "CHAT_LINK": "Open chatbot in Viber",
+      "FINISH": "Your Viber inbox has been created. Check the connection status below before inviting customers."
     }
   }
 }

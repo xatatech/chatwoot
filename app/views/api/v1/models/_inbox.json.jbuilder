@@ -140,6 +140,14 @@ if resource.sms? && resource.channel.m360? && Current.account_user&.administrato
   json.m360_config resource.channel.m360_public_config
 end
 
+## Viber credentials are never serialized, including for administrators.
+if resource.viber?
+  json.bot_name resource.channel.bot_name
+  json.bot_uri resource.channel.bot_uri
+  json.viber_webhook_status resource.channel.webhook_status
+  json.viber_webhook_error resource.channel.webhook_error if Current.account_user&.administrator?
+end
+
 ## Telegram Attributes
 json.bot_name resource.channel.try(:bot_name) if resource.telegram?
 

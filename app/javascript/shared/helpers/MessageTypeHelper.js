@@ -20,6 +20,7 @@ export const MESSAGE_MAX_LENGTH = {
   BANDWIDTH_SMS: 160,
   // https://core.telegram.org/bots/api#sendmessage
   TELEGRAM: 4096,
+  VIBER: 7000,
   LINE: 2000,
   EMAIL: 25000,
 };

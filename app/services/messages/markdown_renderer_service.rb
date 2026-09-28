@@ -8,6 +8,7 @@ class Messages::MarkdownRendererService
     'Channel::Instagram' => :render_instagram,
     'Channel::Line' => :render_line,
     'Channel::TwitterProfile' => :render_plain_text,
+    'Channel::Viber' => :render_plain_text,
     'Channel::Sms' => :render_plain_text,
     'Channel::TwilioSms' => :render_plain_text
   }.freeze

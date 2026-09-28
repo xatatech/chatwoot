@@ -324,3 +324,9 @@ campaign_update_payload:
 
 campaign_whatsapp_template_params:
   $ref: ./request/campaign/whatsapp_template_params.yml
+
+inbox_create_viber_channel_payload:
+  $ref: ./request/inbox/channels/create_viber_channel_payload.yml
+
+inbox_update_viber_channel_payload:
+  $ref: ./request/inbox/channels/update_viber_channel_payload.yml

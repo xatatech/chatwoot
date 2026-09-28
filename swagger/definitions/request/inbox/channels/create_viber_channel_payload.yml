@@ -1,0 +1,13 @@
+type: object
+title: Viber chatbot channel
+required:
+  - type
+  - bot_token
+properties:
+  type:
+    type: string
+    enum: ['viber']
+  bot_token:
+    type: string
+    writeOnly: true
+    description: Direct Viber chatbot token. Stored encrypted and never returned by the API. Saving registers Chatwoot as the bot webhook.

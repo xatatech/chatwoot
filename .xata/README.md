@@ -42,3 +42,7 @@ Tests use synthetic data in disposable containers on an internal Docker network.
 5. For an upstream version change, back up, stop writers/workers, run the upstream database preparation with the new image, and verify before reopening traffic. Database migrations can make reverting only the image unsafe. Follow the ops maintenance runbook.
 
 CodeBuild builds on demand. There is no automatic production rollout or scheduled upstream merge.
+
+## Native Viber
+
+The fork also supports the direct Viber chatbot API as a native inbox. See [Viber setup, capabilities, validation and migration notes](VIBER.md). Viber introduces an additive database migration, so its release requires the migration procedure rather than the original M360 same-schema promotion steps.

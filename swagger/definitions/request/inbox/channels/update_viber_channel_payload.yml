@@ -1,0 +1,10 @@
+type: object
+title: Viber chatbot channel settings
+properties:
+  bot_token:
+    type: string
+    writeOnly: true
+    description: Replacement token for the same bot. Omit or leave blank to keep the saved token.
+  reconnect_webhook:
+    type: boolean
+    description: Set true to queue webhook registration again. Inspect viber_webhook_status on the inbox response for the result.

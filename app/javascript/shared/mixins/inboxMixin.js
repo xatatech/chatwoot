@@ -65,6 +65,9 @@ export default {
     isAnEmailChannel() {
       return this.channelType === INBOX_TYPES.EMAIL;
     },
+    isAViberChannel() {
+      return this.channelType === INBOX_TYPES.VIBER;
+    },
     isATelegramChannel() {
       return this.channelType === INBOX_TYPES.TELEGRAM;
     },
