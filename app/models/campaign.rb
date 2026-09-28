@@ -49,7 +49,7 @@ class Campaign < ApplicationRecord
 
   enum campaign_type: { ongoing: 0, one_off: 1 }
   # TODO : enabled attribute is unneccessary . lets move that to the campaign status with additional statuses like draft, disabled etc.
-  enum campaign_status: { active: 0, completed: 1, processing: 2 }
+  enum campaign_status: { active: 0, completed: 1, processing: 2, failed: 3 }
 
   has_many :conversations, dependent: :nullify, autosave: true
 
@@ -75,14 +75,14 @@ class Campaign < ApplicationRecord
   def mark_processing!
     # Multiple scheduler jobs can pick the same active campaign; lock before flipping status to avoid duplicate sends.
     with_lock do
-      next if completed? || processing?
+      next unless active?
 
       update!(campaign_status: :processing, started_at: Time.current)
     end
   end
 
   def marking_completed?
-    will_save_change_to_campaign_status? && completed?
+    will_save_change_to_campaign_status? && (completed? || failed?)
   end
 
   def set_completed_at

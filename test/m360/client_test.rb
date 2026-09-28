@@ -48,6 +48,7 @@ class M360ClientTest < Minitest::Test
       assert_equal 0, payload['dcs']
       assert_equal false, payload['is_intl']
       refute_empty payload['request_id']
+      assert_match(/\A[a-zA-Z0-9]+\z/, payload['request_id'], 'M360 rejects special characters in request_id')
       assert_equal true, http.use_ssl
       assert_equal 0, http.max_retries
     end
@@ -99,10 +100,30 @@ class M360ClientTest < Minitest::Test
     end
   end
 
+  def test_validation_reason_is_retained_without_raw_response_values
+    result = Response.new('400', JSON.generate(code: 400, message: 'Bad Request', data: [
+      'The request id must only contain letters and numbers.', 'test-secret test-key +639171234567'
+    ]))
+    with_transport(result) do
+      error = assert_raises(Sms::M360Client::Error) { Sms::M360Client.new(config).send_text('09171234567', 'Hello') }
+      assert_match(/The request id must only contain letters and numbers/, error.message)
+      refute_match(/test-secret|test-key|639171234567/, error.message)
+    end
+  end
+
+  def test_http_rejection_with_non_json_body_stays_a_rejection
+    with_transport(Response.new('400', '<html>Bad request</html>')) do
+      error = assert_raises(Sms::M360Client::Error) { Sms::M360Client.new(config).send_text('09171234567', 'Hello') }
+      refute_kind_of Sms::M360Client::UnknownOutcome, error
+      assert_match(/HTTP 400/, error.message)
+    end
+  end
+
   def test_timeout_is_not_retried_and_secrets_are_not_exposed
     with_transport(Net::ReadTimeout.new('test-secret test-key')) do |http|
       error = assert_raises(Sms::M360Client::Error) { Sms::M360Client.new(config).send_text('09171234567', 'Hello') }
       assert_equal 1, http.requests.length
+      assert_kind_of Sms::M360Client::UnknownOutcome, error
       assert_match(/unknown/, error.message)
       refute_match(/test-secret|test-key/, error.message)
     end

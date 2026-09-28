@@ -8,7 +8,9 @@ The adapter uses the [M360 One API v4](https://developer.m360.com.ph/one/api/gui
 
 - Uses the existing native SMS campaign scheduler and audience selection; no custom database migrations.
 - SMS is text only. No inbound messages, attachments, or MMS.
-- API acceptance is not handset delivery. Native SMS campaigns mark themselves completed after iterating their audience, even if individual sends fail. This change retains that behavior. Check M360's dashboard for recipient results and delivery reports; DLR ingestion and per-recipient campaign reports in Chatwoot are not included.
+- API acceptance is not handset delivery. M360 campaign cards show accepted, rejected, uncertain and skipped counts, plus safe provider errors. Rejections, uncertain outcomes and empty audiences receive a terminal failed status; partial acceptance is displayed as completed with errors. Successful submissions show Submitted to M360. Check M360's dashboard for delivery reports; DLR ingestion and per-recipient campaign reports are not included.
+- Request IDs contain only letters and numbers, as required by M360. Hyphenated UUIDs are rejected before SMS submission.
+- Failure summaries use the existing trigger_rules JSON column and the failed enum value 3. Rolling back to the original image hides these new statuses; do not reset failed campaigns to active, as that would send them again.
 - Network timeouts and unconfirmed responses are not automatically retried, because v4 `request_id` is a correlation identifier, not a documented idempotency guarantee. Check the provider dashboard before resending.
 - This is a maintained fork, not a public Chatwoot plugin. No guarantee of conflict-free future upgrades.
 

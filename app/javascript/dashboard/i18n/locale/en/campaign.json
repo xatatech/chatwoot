@@ -136,6 +136,15 @@
             "ERROR_MESSAGE": "There was an error. Please try again."
           }
         }
+      },
+      "M360": {
+        "FAILED": "Failed",
+        "PARTIAL": "Completed with errors",
+        "UNCERTAIN": "Needs verification",
+        "SUBMITTED": "Submitted to M360",
+        "NO_RECIPIENTS": "No eligible recipients",
+        "COUNTS": "Accepted: {accepted} · Rejected: {rejected} · Uncertain: {unknown} · Skipped: {skipped}",
+        "DELIVERY_NOTE": "Accepted means M360 received the request, not confirmed handset delivery. Check M360 reports before resending uncertain submissions."
       }
     },
     "WHATSAPP": {

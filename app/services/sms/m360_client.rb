@@ -8,6 +8,24 @@ class Sms::M360Client
   GSM_CHARACTERS = ("@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&'()*+,-./0123456789:;<=>?¡" \
                     'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà^{}\\[~]|€').freeze
   class Error < StandardError; end
+  class UnknownOutcome < Error; end
+
+  # Only fixed, documented provider messages may reach logs or the dashboard.
+  # Never retain raw response bodies: they can echo credentials and recipients.
+  SAFE_ERRORS = [
+    'The request id must only contain letters and numbers.',
+    'The special characters are not allowed in request_id',
+    'The entered credentials are invalid', 'Unauthorized to use Platform',
+    'The app_key field is required.', 'The app_secret field is required.',
+    'The to field is required.', 'The data type of to field is invalid.',
+    'The msisdn format in to field is invalid.', 'The from field is required.',
+    'The sender ID in from field is not provisioned on your account.',
+    'The sender ID in from field is inactive', 'The is_intl is invalid',
+    'Unauthorized to send to international (non-PH) mobile number',
+    'The selected dcs is invalid', 'The content.text is required.',
+    'The content.text value is invalid', 'Insufficient Credits', 'Insufficient Credits.',
+    'The recipient is in the opt-out list, and will not receive any messages.'
+  ].freeze
 
   def initialize(config)
     @config = config
@@ -28,7 +46,7 @@ class Sms::M360Client
     payload = {
       app_key: @config['app_key'], app_secret: @config['app_secret'],
       to: ["+#{number}"], content: { text: content }, from: sender,
-      request_id: SecureRandom.uuid, is_intl: international, dcs: dcs
+      request_id: SecureRandom.hex(16), is_intl: international, dcs: dcs
     }
     request = Net::HTTP::Post.new(ENDPOINT, 'Content-Type' => 'application/json')
     request.body = JSON.generate(payload)
@@ -45,7 +63,7 @@ class Sms::M360Client
   rescue StandardError
     # A timeout may occur after provider acceptance. Never retry automatically or
     # put provider response bodies, recipients or credentials in exception logs.
-    raise Error, 'M360 submission outcome is unknown; check M360 reports before resending'
+    raise UnknownOutcome, 'M360 submission outcome is unknown; check M360 reports before resending'
   end
 
   def self.normalize_number(value)
@@ -61,17 +79,26 @@ class Sms::M360Client
   private
 
   def parse_response(response, number)
-    data = JSON.parse(response.body)
-    result = data['data'].first if data.is_a?(Hash) && data['data'].is_a?(Array) && data['data'].length == 1
-    accepted = response.code.to_i.between?(200, 299) && data.is_a?(Hash) && data['code'].to_s == '200'
+    data = begin
+      JSON.parse(response.body)
+    rescue JSON::ParserError
+      {}
+    end
+    data = {} unless data.is_a?(Hash)
+    result = data['data'].first if data['data'].is_a?(Array) && data['data'].length == 1
+    accepted = response.code.to_i.between?(200, 299) && data['code'].to_s == '200'
     if accepted && result.is_a?(Hash) && result['code'].to_s == '201' && !result['transid'].to_s.empty?
       return result['transid'] if self.class.normalize_number(result['to']) == number
     end
 
-    if response.code.to_i.between?(400, 499)
-      raise Error, "M360 rejected the SMS (HTTP #{response.code.to_i}); check M360 reports"
+    rejected = response.code.to_i.between?(400, 499) || (accepted && result.is_a?(Hash) && result['code'].to_s == '400')
+    if rejected
+      messages = [data['message'], result.is_a?(Hash) ? result['message'] : data['data']].flatten
+      reason = messages.select { |value| SAFE_ERRORS.include?(value) }.uniq.join('; ')
+      detail = reason.empty? ? 'check credentials, sender settings and M360 reports' : reason
+      raise Error, "M360 rejected the SMS (HTTP #{response.code.to_i}): #{detail}"
     end
 
-    raise Error, 'M360 submission was not confirmed; check M360 reports before resending'
+    raise UnknownOutcome, 'M360 submission was not confirmed; check M360 reports before resending'
   end
 end

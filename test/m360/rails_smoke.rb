@@ -75,3 +75,60 @@ check(requests.first['from'] == 'XataNew' && requests.first['app_secret'] == 'te
 check(!Channel::Sms.new(account: account, provider: 'm360', provider_config: { sender_id: 'Missing' }).valid?, 'missing credentials rejected')
 check(Channel::Sms.new(account: account, phone_number: '+15551234567', provider_config: {}).valid?, 'existing Bandwidth setup stays valid')
 puts 'M360 Rails smoke checks complete'
+
+failed_campaign = account.campaigns.create!(title: 'Rejected campaign', message: 'Hello', inbox: inbox,
+                                          audience: [{ type: 'Label', id: label.id }])
+http.define_singleton_method(:request) do |request|
+  requests << JSON.parse(request.body)
+  Struct.new(:code, :body).new('400', { code: 400, message: 'Bad Request', data: ['The request id must only contain letters and numbers.'] }.to_json)
+end
+Net::HTTP.define_singleton_method(:new) { |*| http }
+begin
+  failed_campaign.trigger!
+  check(failed_campaign.reload.campaign_status == 'failed', 'rejected campaign is failed, not completed')
+  summary = failed_campaign.trigger_rules.fetch('m360_submission')
+  check(summary['accepted'] == 0 && summary['rejected'] == 1, 'provider rejection is recorded')
+  check(summary['errors'].include?('M360 rejected the SMS (HTTP 400): The request id must only contain letters and numbers.'), 'safe provider reason is retained')
+  previous_count = requests.size
+  failed_campaign.trigger!
+  check(requests.size == previous_count, 'failed campaign never automatically resends')
+ensure
+  Net::HTTP.define_singleton_method(:new, original_new)
+end
+
+# A campaign can contain both accepted and rejected submissions; neither a
+# partial failure nor a timeout may be presented as successful completion.
+second_contact = account.contacts.create!(name: 'Second recipient', phone_number: '+639171234569')
+second_contact.update_labels([label.title])
+[
+  ['partial', { 'accepted' => 1, 'rejected' => 1, 'unknown' => 0 }],
+  ['timeout', { 'accepted' => 0, 'rejected' => 0, 'unknown' => 2 }]
+].each do |mode, expected|
+  mixed = account.campaigns.create!(title: mode, message: 'Hello', inbox: inbox,
+                                    audience: [{ type: 'Label', id: label.id }])
+  calls = 0
+  http.define_singleton_method(:request) do |request|
+    calls += 1
+    raise Net::ReadTimeout, 'sensitive text must not be retained' if mode == 'timeout'
+    to = JSON.parse(request.body).fetch('to').first
+    code = calls == 1 ? 201 : 400
+    Struct.new(:code, :body).new('200', { code: 200, data: [{ code: code, transid: 'synthetic', to: to, message: 'Insufficient Credits.' }] }.to_json)
+  end
+  Net::HTTP.define_singleton_method(:new) { |*| http }
+  begin
+    mixed.trigger!
+  ensure
+    Net::HTTP.define_singleton_method(:new, original_new)
+  end
+  summary = mixed.reload.trigger_rules.fetch('m360_submission')
+  check(mixed.failed? && expected.all? { |key, value| summary[key] == value }, "#{mode} is recorded without claiming completion")
+  check(calls == 2 && !summary.to_json.include?('sensitive text'), "#{mode} is not retried and contains no raw error")
+end
+
+empty = account.campaigns.create!(title: 'Empty audience', message: 'Hello', inbox: inbox, audience: [])
+empty.trigger!
+check(empty.reload.failed? && empty.trigger_rules['m360_submission']['accepted'].zero?, 'empty audience does not claim a successful campaign')
+session.get("/api/v1/accounts/#{account.id}/campaigns", headers: headers, as: :json)
+failed_result = session.response.parsed_body.find { |item| item['id'] == failed_campaign.display_id }
+check(failed_result['campaign_status'] == 'failed' && failed_result['sms_submission']['rejected'] == 1, 'campaign API exposes the failed submission summary')
+puts 'M360 campaign failure checks complete'
