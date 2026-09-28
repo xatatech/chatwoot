@@ -224,6 +224,7 @@ export default {
         this.isAPIInbox ||
         (this.isAnEmailChannel && !this.inbox.provider) ||
         this.shouldShowWhatsAppConfiguration ||
+        this.inbox.provider === 'm360' ||
         this.isAWebWidgetInbox
       ) {
         visibleToAllChannelTabs = [
