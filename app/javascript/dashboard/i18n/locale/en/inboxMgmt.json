@@ -1620,6 +1620,21 @@
       "INSTAGRAM": "Instagram",
       "TIKTOK": "TikTok",
       "VOICE": "Voice"
+    },
+    "M360": {
+      "DESCRIPTION": "Send SMS using your approved M360 sender ID. Create campaigns from Campaigns → One-off using this inbox. Customer replies are not supported.",
+      "INBOX_NAME": "Inbox name",
+      "SENDER_ID": "Approved sender ID",
+      "APP_KEY": "Application key",
+      "APP_SECRET": "Application secret",
+      "KEEP_CREDENTIALS": "Leave credentials blank to keep the saved values.",
+      "INTERNATIONAL": "Allow international SMS (must also be enabled by M360)",
+      "DELIVERY_NOTE": "Campaign completion means sending has finished. Check M360 reports for delivery results. An uncertain submission is not retried automatically.",
+      "SAVE": "Save M360 settings",
+      "CREATE": "Create M360 inbox",
+      "SAVED": "M360 settings saved",
+      "ERROR": "Could not save M360 settings. Check the required fields and try again.",
+      "PROVIDER": "M360"
     }
   }
 }

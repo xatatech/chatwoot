@@ -85,7 +85,11 @@ const shouldShowTwilioCallbackFallback = computed(() => {
 });
 
 const shouldShowBandwidthCallback = computed(() => {
-  return isASmsInbox.value && !isATwilioChannel.value;
+  return (
+    isASmsInbox.value &&
+    !isATwilioChannel.value &&
+    currentInbox.value?.provider !== 'm360'
+  );
 });
 
 const message = computed(() => {

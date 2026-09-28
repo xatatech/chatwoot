@@ -17,11 +17,13 @@
 
 class Channel::Sms < ApplicationRecord
   include Channelable
+  include M360SmsChannel
 
   self.table_name = 'channel_sms'
-  EDITABLE_ATTRS = [:phone_number, { provider_config: {} }].freeze
+  EDITABLE_ATTRS = [:phone_number, :provider, { provider_config: {} }].freeze
 
   validates :phone_number, presence: true, uniqueness: true
+  validates :provider, inclusion: { in: %w[default bandwidth m360] }
   # before_save :validate_provider_config
 
   def name
@@ -34,6 +36,8 @@ class Channel::Sms < ApplicationRecord
   end
 
   def send_message(contact_number, message)
+    return send_m360_message(contact_number, message) if m360?
+
     body = message_body(contact_number, message.outgoing_content)
     body['media'] = message.attachments.map(&:download_url) if message.attachments.present?
 
@@ -41,6 +45,8 @@ class Channel::Sms < ApplicationRecord
   end
 
   def send_text_message(contact_number, message_content)
+    return send_m360_text(contact_number, message_content) if m360?
+
     body = message_body(contact_number, message_content)
     send_to_bandwidth(body)
   end

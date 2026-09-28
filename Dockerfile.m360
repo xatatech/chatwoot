@@ -1,0 +1,29 @@
+# Reuse the official, digest-pinned runtime/gems for the matching upstream release.
+ARG UPSTREAM_IMAGE
+FROM node:24-alpine AS frontend
+WORKDIR /app
+RUN npm install --global pnpm@10.2.0
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
+COPY . .
+RUN pnpm exec prettier --check app/javascript/dashboard/routes/dashboard/settings/inbox/channels/M360Sms.vue
+RUN pnpm exec eslint app/javascript/dashboard/routes/dashboard/settings/inbox/channels/M360Sms.vue
+ENV NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192
+RUN pnpm exec vite build --mode production && pnpm run build:sdk
+
+FROM ${UPSTREAM_IMAGE} AS runtime
+ARG UPSTREAM_COMMIT
+ARG SOURCE_COMMIT
+LABEL org.opencontainers.image.source="https://github.com/xatatech/chatwoot" \
+      org.opencontainers.image.revision=${SOURCE_COMMIT}
+RUN test "$(cat /app/.git_sha)" = "$UPSTREAM_COMMIT"
+COPY Gemfile.lock /tmp/xata-Gemfile.lock
+RUN cmp /app/Gemfile.lock /tmp/xata-Gemfile.lock && rm /tmp/xata-Gemfile.lock
+COPY app /app/app
+COPY test/m360 /app/test/m360
+COPY .xata/upstream.json /app/.xata/upstream.json
+RUN printf '%s\n' "$SOURCE_COMMIT" > /app/.git_sha
+
+FROM runtime AS final
+COPY --from=frontend /app/public/vite /app/public/vite
+COPY --from=frontend /app/public/packs /app/public/packs

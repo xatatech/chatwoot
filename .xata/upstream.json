@@ -1,0 +1,5 @@
+{
+  "tag": "v4.18.0",
+  "commit": "9f920b549c14491a4e587687a3eed5d21c6ccc7d",
+  "image": "chatwoot/chatwoot:v4.18.0@sha256:b419dded7e9d2f54a24fd427b74ba7e6069d601b500618045c1eb6c01a1cc9a1"
+}
